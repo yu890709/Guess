@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     String TAG=MainActivity.class.getSimpleName();
     private TextView message;
     static int count=0;
-    private Button resetBotton;
+    private Button resetButton;
+    private Button guessButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,16 +33,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Log.d(TAG, "secret: "+secret);
-        number = findViewById(R.id.inputText);
-        message = findViewById(R.id.message);
-        resetBotton = findViewById(R.id.resetButton);
+        findView();
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
             }
         });
+    }
+
+    private void findView() {
+        number = findViewById(R.id.inputText);
+        message = findViewById(R.id.message);
+        resetButton = findViewById(R.id.resetButton);
+        guessButton = findViewById(R.id.guessBotton);
     }
     public void reset(View view){
         secret=new Random().nextInt(10)+1;
@@ -49,10 +54,11 @@ public class MainActivity extends AppCompatActivity {
         count=0;
         message.setText("");
         number.setText("");
-        resetBotton.setVisibility(View.GONE);
+        resetButton.setVisibility(View.GONE);
+        guessButton.setVisibility(View.VISIBLE);
     }
-
     public void guess(View view){
+
         try {
             int num = Integer.parseInt(number.getText().toString());
             if(num>secret){
@@ -61,11 +67,20 @@ public class MainActivity extends AppCompatActivity {
                 message.setText("大一點");
             }else{
                 message.setText("答對了");
-                resetBotton.setVisibility(View.VISIBLE);
+                resetButton.setVisibility(View.VISIBLE);
+                guessButton.setVisibility(View.GONE);
+                count--;
+            }
+            count++;
+            if(count>=4){
+                message.setText("太多次了!重來吧!");
+                resetButton.setVisibility(View.VISIBLE);
+                guessButton.setVisibility(View.GONE);
             }
         }catch(Exception i){
             message.setText("請輸入數字!!!");
         }
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
