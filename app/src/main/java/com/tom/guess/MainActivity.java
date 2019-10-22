@@ -62,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             int num = Integer.parseInt(number.getText().toString());
             if(num>secret){
-                message.setText("小一點");
+                message.setText("小一點\n剩"+(3-count)+"次");
             }else if(num<secret){
-                message.setText("大一點");
+                message.setText("大一點\n剩"+(3-count)+"次");
             }else{
-                message.setText("答對了");
+                message.setText("答對了\n猜了"+(1+count)+"次");
                 resetButton.setVisibility(View.VISIBLE);
                 guessButton.setVisibility(View.GONE);
                 count--;
