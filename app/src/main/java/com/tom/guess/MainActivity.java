@@ -1,9 +1,11 @@
 package com.tom.guess;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,9 +23,7 @@ public class MainActivity extends AppCompatActivity {
     int secret=new Random().nextInt(10)+1;
     private EditText number;
     String TAG=MainActivity.class.getSimpleName();
-    private TextView message;
     static int count=0;
-    private Button resetButton;
     private Button guessButton;
 
     @Override
@@ -44,35 +44,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void findView() {
         number = findViewById(R.id.inputText);
-        message = findViewById(R.id.message);
-        resetButton = findViewById(R.id.resetButton);
         guessButton = findViewById(R.id.guessBotton);
     }
-    public void reset(View view){
+
+    public void reset(){
         secret=new Random().nextInt(10)+1;
         Log.d(TAG, "secret: "+secret);
         count=0;
-        message.setText("");
         number.setText("");
-        resetButton.setVisibility(View.GONE);
-        guessButton.setVisibility(View.VISIBLE);
     }
-    public void guess(View view){
 
+    public void guess(View view){
+        count++;
+        String message="答對了\n猜了"+count+"次";
+        DialogInterface.OnClickListener listener=new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                reset();
+            }
+        };
         try {
             int num = Integer.parseInt(number.getText().toString());
             if(num>secret){
-                message.setText("小一點\n剩"+(3-count)+"次");
+                message="小一點\n剩"+(3-count)+"次";
+                listener=null;
             }else if(num<secret){
-                message.setText("大一點\n剩"+(3-count)+"次");
-            }else{
-                message.setText("答對了\n猜了"+(1+count)+"次");
-                resetButton.setVisibility(View.VISIBLE);
-                guessButton.setVisibility(View.GONE);
-                count--;
+                message="大一點\n剩"+(3-count)+"次";
+                listener=null;
             }
-            count++;
-            if(count>=4){
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("訊息")
+                    .setMessage(message)
+                    .setPositiveButton("OK",listener)
+                    .show();
+            if(count>=3){
                 message.setText("太多次了!重來吧!");
                 resetButton.setVisibility(View.VISIBLE);
                 guessButton.setVisibility(View.GONE);
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
