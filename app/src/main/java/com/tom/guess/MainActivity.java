@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText number;
     String TAG=MainActivity.class.getSimpleName();
     static int count=0;
-    private Button guessButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         Log.d(TAG, "secret: "+secret);
-        findView();
+        number = findViewById(R.id.inputText);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,12 +42,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void findView() {
-        number = findViewById(R.id.inputText);
-        guessButton = findViewById(R.id.guessBotton);
-    }
-
     public void reset(){
         secret=new Random().nextInt(10)+1;
         Log.d(TAG, "secret: "+secret);
@@ -65,27 +60,33 @@ public class MainActivity extends AppCompatActivity {
         };
         try {
             int num = Integer.parseInt(number.getText().toString());
-            if(num>secret){
-                message="小一點\n剩"+(3-count)+"次";
-                listener=null;
-            }else if(num<secret){
-                message="大一點\n剩"+(3-count)+"次";
-                listener=null;
+            if(num!=secret) {
+                if (count >= 3) {
+                    message = "太多次了!重來吧!";
+                } else {
+                    if (num > secret) {
+                        message = "小一點\n剩" + (3 - count) + "次";
+                        listener = null;
+                    } else if (num < secret) {
+                        message = "大一點\n剩" + (3 - count) + "次";
+                        listener = null;
+                    }
+                }
             }
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("訊息")
-                    .setMessage(message)
-                    .setPositiveButton("OK",listener)
-                    .show();
-            if(count>=3){
-                message.setText("太多次了!重來吧!");
-                resetButton.setVisibility(View.VISIBLE);
-                guessButton.setVisibility(View.GONE);
-            }
+            showAltertDialog(message, listener);
         }catch(Exception i){
-            message.setText("請輸入數字!!!");
+            count--;
+            message="請輸入數字!";
+            listener=null;
+            showAltertDialog(message, listener);
         }
-
+    }
+    private void showAltertDialog(String message, DialogInterface.OnClickListener listener) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("訊息")
+                .setMessage(message)
+                .setPositiveButton("OK",listener)
+                .show();
     }
 
     @Override
